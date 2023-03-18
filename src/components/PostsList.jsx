@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View, SafeAreaView, Alert } from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TextInput } from 'react-native';
 import postService from '../services/post.service';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const fakePosts = [
     {
@@ -68,9 +70,6 @@ const fakePosts = [
       }
 ]
 
-const addComment = (postId, comment) => {
-
-}
 
 
 
@@ -81,9 +80,11 @@ const PostsList = () => {
 
   const [posts, setPosts] = useState([])
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchPosts();
+    }, [])
+  );
 
   const fetchPosts = async () => {
     try{
@@ -107,12 +108,15 @@ const PostsList = () => {
   if (error) {
     return <Text>Error: {error.message}</Text>;
   }
+  
+ 
+
 
   return (
     <Container>
     <FlatList
       data={posts}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item._id.toString()}
       renderItem={({ item }) => <Post post={item} />}
     />
     </Container>
@@ -125,11 +129,25 @@ const Post = ({ post }) => {
     const [showAllComments, setShowAllComments] = useState(post.comments.length <= 4);
     const [dialogComment, setDialogComment] = useState(false);
     
+    const handleComment = async (postId) => {
+      console.log(postId)
+      
+    let jwt = await AsyncStorage.getItem('token')
+    postService.addComment(jwt, comment)
+    .then(() => {
+      setDialogComment(!dialogComment)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  
+  }
+
   return (
     <PostContainer>
       <PostHeader>
-        <ProfileImage source={{ uri: 'https://i.pravatar.cc/150?img=' + post.id }} />
-        <Text>{post.user}</Text>
+        <ProfileImage source={{ uri: post.author.avatar }} />
+        <Text>{post.author.firstName}</Text>
       </PostHeader>
       <PostContent>
         <Text>{post.content}</Text>
@@ -155,7 +173,7 @@ const Post = ({ post }) => {
         {dialogComment && (
             <AddComment>
                 <TextInput placeholder='add comment...' value={comment} onChangeText={(e) => setComment(e)} />
-                <Icon name="send-o" size={20} color="#888" onPress={()=> setDialogComment(!dialogComment)} />
+                <Icon name="send-o" size={20} color="#888" onPress={() => handleComment(post._id)} />
             </AddComment>
         )}
 

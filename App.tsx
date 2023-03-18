@@ -1,27 +1,18 @@
 import React from 'react';
-
+import { theme } from './src/config/theme'
+import { ThemeProvider } from 'styled-components';
 import Routes from './src/config/routes';
 import ContextProvider from './src/config/context';
-import { ThemeProvider, createTheme } from '@rneui/themed';
 
-const myTheme = createTheme({
-  lightColors: {
-    primary: '#D68D85',
-  },
-  darkColors: {
-    primary: '#121212',
-  },
-  
-  mode: 'dark',
-});
+
 
 function App() {
   return (
+    <ThemeProvider theme={theme}>
     <ContextProvider>
-      <ThemeProvider theme={myTheme}>
         <Routes/>
-      </ThemeProvider>
     </ContextProvider>
+    </ThemeProvider>
   );
 }
 

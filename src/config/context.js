@@ -15,6 +15,7 @@ const ContextProvider = ({ children }) => {
     let jwt = AsyncStorage.getItem('token')
     .then(res => {
       setToken(res)
+      // console.log(token)
     })
    
     console.log('hello', jwt);

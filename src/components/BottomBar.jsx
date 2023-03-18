@@ -13,7 +13,7 @@ const BottomHeader = styled.View`
   position: absolute;
   bottom: -6px;
   width: 100%;
-  background-color: #D68D85;
+  background-color: ${props => props.theme.primaryColor}
   height: 50px;
   border-top-width: 1px;
   border-top-color: #ddd;

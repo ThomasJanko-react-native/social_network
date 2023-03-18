@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const URL = 'http://192.168.77.238:5056/api/user'
+const URL = 'http://192.168.0.19:5056/api/user'
 
 export default{
     

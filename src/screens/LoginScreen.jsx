@@ -26,7 +26,7 @@ const ButtonContainer = styled.View`
 `;
 
 const Button = styled.TouchableOpacity`
-  background-color: #007aff;
+  background-color: ${props => props.theme.primaryColor};
   padding: 10px 20px;
   border-radius: 5px;
   margin-right: 10px;

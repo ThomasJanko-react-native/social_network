@@ -51,7 +51,7 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   height: 70px;
-  background-color: #D68D85;
+  background-color:  ${props => props.theme.primaryColor}
   padding: 10px;
   
 `;
