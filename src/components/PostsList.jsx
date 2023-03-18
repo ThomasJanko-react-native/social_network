@@ -183,9 +183,10 @@ const Post = ({ post }) => {
 };
 
 const Container = styled.SafeAreaView`
+  flex: 1;
   background-color: black;
   position: relative;
-  height: 90%;
+  marginBottom: 50px;
 `;
 
 const PostContainer = styled.View`

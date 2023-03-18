@@ -11,12 +11,12 @@ import { Context } from '../config/context';
 
 const BottomHeader = styled.View`
   position: absolute;
-  bottom: -6px;
+  bottom: 0px;
   width: 100%;
   background-color: ${props => props.theme.primaryColor}
   height: 50px;
   border-top-width: 1px;
-  border-top-color: #ddd;
+  border-top-color: ${props => props.theme.secondaryColor}
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

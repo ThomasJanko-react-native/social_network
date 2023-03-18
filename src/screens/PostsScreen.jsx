@@ -7,11 +7,10 @@ import PostsList from '../components/PostsList';
 
 const PostsScreen = () => {
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
             <HeaderBar/>
             <PostsList/>
             <BottomBar/>
-            {/* <Text style={{color: 'red', position: 'absolute', bottom: 40}}>HELLLOO</Text> */}
         </SafeAreaView>
     );
 }
