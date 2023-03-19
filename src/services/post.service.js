@@ -15,13 +15,21 @@ export default{
         .then(res=>res)
         .catch(err=>err)
     },
+
     getPosts(){
         return axios.get(`${URL}/posts`)
         .then(res=>res)
         .catch(err=>err)
     },
-    addComment(jwt){
-      return axios.get(`${URL}/comment`)
+
+    addComment(post_id, jwt, form){
+      console.log(form)
+      const config = {
+        headers: {
+          authorization: jwt,
+        },
+      };
+      return axios.post(`${URL}/comment/${post_id}`, form, config)
       .then(res=>res)
       .catch(err=>err)
     }

@@ -1,6 +1,8 @@
-import React from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollView } from 'react-native';
 import styled from 'styled-components/native';
+import userService from '../services/user.service';
 
 
 const users = [
@@ -71,11 +73,35 @@ const Avatar = styled.Image`
 `;
 
 const HeaderBar = () => {
+
+  const [users, setUsers] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUsers();
+    }, [])
+  );
+
+  const fetchUsers = async () => {
+    try{
+      response = await userService.getusers()
+      console.log(response)
+      setUsers(response.data)
+    }
+    catch(err){
+      setError(err);
+      Alert.alert('Error', 'Something went wrong')
+    }
+    
+  }
+
+
+
   return (
     <Container>
       <AvatarContainer horizontal={true}>
       {users.map((user, index) => (
-        <Avatar key={index} source={{ uri: 'https://i.pravatar.cc/150?img=' + user.id}} />
+        <Avatar key={index} source={{ uri: user.avatar}} />
       ))}
       </AvatarContainer>
     </Container>

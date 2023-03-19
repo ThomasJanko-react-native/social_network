@@ -28,6 +28,11 @@ export default{
         .then(res=>res)
         .catch(err=>console.log(err))
     },
+    getusers(){
+        return axios.get(`${URL}/users`)
+        .then(res=>res)
+        .catch(err=>console.log(err))
+    }
     
 }
   

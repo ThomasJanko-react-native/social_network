@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
+import { View } from 'react-native';
 import { Text } from 'react-native';
 import styled from 'styled-components';
+import Loader from '../components/Loader';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import { Context } from '../config/context';
@@ -38,6 +40,7 @@ const ButtonText = styled.Text`
 `;
 
 const LoginScreen = () => {
+  const {loader, setloader} = useContext(Context)
     const [showLoginForm, setShowLoginForm] = useState(true);
     const {userAuth} = useContext(Context)
   return (
@@ -48,8 +51,10 @@ const LoginScreen = () => {
       <Button onPress={() => setShowLoginForm(!showLoginForm)}>
         <ButtonText>{showLoginForm ? 'Register' : 'Login'}</ButtonText>
       </Button>
+      
     </ButtonContainer>
-     {userAuth && <Text style={{color: 'black'}}>{userAuth.email} </Text>} 
+     {userAuth && <Text style={{color: 'black'}}>{userAuth.email}  </Text>}
+     {loader && <Loader/>} 
   </Container>
   );
 };

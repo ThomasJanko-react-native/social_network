@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { FlatList, Image, Text, TouchableOpacity, View, SafeAreaView, Alert } from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -6,75 +6,11 @@ import { TextInput } from 'react-native';
 import postService from '../services/post.service';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const fakePosts = [
-    {
-        "id": 1,
-        "user": "John Smith",
-        "date": "2022-12-01",
-        "content": "Just had the most amazing sushi dinner! #foodie #sushi",
-        "image": "https://www.referenseo.com/wp-content/uploads/2019/03/image-attractive-960x540.jpg",
-        "likes": 35,
-        "comments": [
-          {
-            "user": "Jane Doe",
-            "comment": "That looks delicious, John! Where did you go?",
-            "date": "2022-12-01"
-          },
-          {
-            "user": "Mark Johnson",
-            "comment": "I love sushi too! I need to check out that place.",
-            "date": "2022-12-01"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "user": "Sarah Lee",
-        "date": "2022-11-28",
-        "content": "Just finished my first half marathon! #running #fitness",
-        "image": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
-        "likes": 75,
-        "comments": [
-          {
-            "user": "Emily Chen",
-            "comment": "Wow, congrats Sarah! That's a huge accomplishment.",
-            "date": "2022-11-28"
-          },
-          {
-            "user": "Alex Kim",
-            "comment": "Awesome job, Sarah! I need to start training for a half marathon too.",
-            "date": "2022-11-29"
-          }
-        ]
-      },
-      {
-        "id": 3,
-        "user": "David Wang",
-        "date": "2022-11-25",
-        "content": "Had an amazing time at the concert last night! #music #fun",
-        "image": "https://cdn-uploads.gameblog.fr/img/news/409777_63720be0605c4.jpg?ver=1",
-        "likes": 42,
-        "comments": [
-          {
-            "user": "Rachel Chen",
-            "comment": "Who did you see, David? I love going to concerts!",
-            "date": "2022-11-25"
-          },
-          {
-            "user": "Jason Li",
-            "comment": "I heard that concert was amazing. Wish I could've gone!",
-            "date": "2022-11-26"
-          }
-        ]
-      }
-]
-
-
-
-
+import { Context } from '../config/context';
 
 const PostsList = () => {
+
+  const {reload} = useContext(Context)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
 
@@ -83,7 +19,7 @@ const PostsList = () => {
   useFocusEffect(
     useCallback(() => {
       fetchPosts();
-    }, [])
+    }, [reload])
   );
 
   const fetchPosts = async () => {
@@ -109,9 +45,6 @@ const PostsList = () => {
     return <Text>Error: {error.message}</Text>;
   }
   
- 
-
-
   return (
     <Container>
     <FlatList
@@ -124,19 +57,26 @@ const PostsList = () => {
 };
 
 const Post = ({ post }) => {
+
+    const {reload, setReload} = useContext(Context)
+
     const [comment, setComment] = useState("");
-    const [comments, setComments] = useState(post.comments.slice(0, 4));
-    const [showAllComments, setShowAllComments] = useState(post.comments.length <= 4);
+    // const [comments, setComments] = useState(post.comments.slice(0, 4));
+    // const [showAllComments, setShowAllComments] = useState(post.comments.length <= 4);
     const [dialogComment, setDialogComment] = useState(false);
+    const [like, setLike] = useState(false)
     
     const handleComment = async (postId) => {
-      console.log(postId)
-      
     let jwt = await AsyncStorage.getItem('token')
-    postService.addComment(jwt, comment)
-    .then(() => {
+    let form = {
+      content: comment
+    }
+    postService.addComment(postId, jwt, form)
+    .then((res) => {
+      setComment('')
       setDialogComment(!dialogComment)
-    })
+      setReload(!reload)
+      })
     .catch((err) => {
       console.log(err)
     })
@@ -150,12 +90,18 @@ const Post = ({ post }) => {
         <Text>{post.author.firstName}</Text>
       </PostHeader>
       <PostContent>
+        <TitleText>{post.title} </TitleText>
         <Text>{post.content}</Text>
         <PostImage source={{ uri: post.image }} />
       </PostContent>
       <PostFooter>
       <PostLikes>
-          <Icon name="heart-o" size={20} color="red" /> {post.likes} likes
+          {like? 
+          <Icon name="heart" size={20} color="red" onPress={() => setLike(!like)} />
+           : 
+           <Icon name="heart-o" size={20} color="white" onPress={() => setLike(!like)} />
+          }
+          
         </PostLikes>
         <PostComment>
           <Icon name="comment" size={20} color="#888" onPress={()=> setDialogComment(!dialogComment)} /> {post.comments.length} comments
@@ -164,9 +110,9 @@ const Post = ({ post }) => {
       </PostFooter>
         <Comments>
           {post.comments.map(comment => (
-            <Comment key={comment.user}>
-              <Username>{comment.user}: </Username>
-              <CommentText >{comment.comment}</CommentText>
+            <Comment key={comment._id}>
+              <Username>{comment.author.firstName}: </Username>
+              <CommentText >{comment.content}</CommentText>
             </Comment>
           ))}
         </Comments>
@@ -210,7 +156,7 @@ const ProfileImage = styled.Image`
 `;
 
 const PostContent = styled.View`
-  padding: 10px;
+  padding-horizontal: 12px;
 `;
 
 const PostImage = styled.Image`
@@ -246,7 +192,7 @@ const PostComment = styled.Text`
 
 const Comments = styled.View`
   text-align: left;
-  margin-horizontal: 10px;
+  margin: 10px;
   max-width: 70%;
 
 `;
@@ -270,6 +216,11 @@ margin-horizontal: 20px;
 align-items: center;
 flex-direction: row;
 justify-content: space-between;
+`;
+
+const TitleText = styled.Text`
+  font-weight: bold;
+  font-size: 16px;
 `;
 
 

@@ -9,6 +9,8 @@ const ContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userAuth, setUserAuth] = useState(null);
   const [token, setToken] = useState(null);
+  const [loader, setLoader] = useState(false);
+  const [reload, setReload] = useState(false)
 
   useEffect(() => {
     
@@ -51,6 +53,10 @@ const ContextProvider = ({ children }) => {
         setUserAuth,
         login,
         logout,
+        loader,
+        setLoader,
+        reload,
+        setReload
         }}>
       {children}
     </Context.Provider>

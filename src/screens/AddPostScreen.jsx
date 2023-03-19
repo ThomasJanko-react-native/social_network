@@ -6,6 +6,7 @@ import postService from '../services/post.service';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Loader from '../components/Loader';
 
 
 const Container = styled.View`
@@ -38,11 +39,14 @@ const ImagePreview = styled.Image`
   align-items: center;
   align-self: center;
 `;
+const ViewLoader = styled.View`
+  marginTop: 50px;
+`;
 
 const AddPostScreen = () => {
   const navigation = useNavigation();
 
-  const { userAuth} = useContext(Context)
+  const { userAuth, loader, setLoader} = useContext(Context)
   const [newPost, setNewPost] = useState({
     title: '',
     content: '',
@@ -52,14 +56,17 @@ const AddPostScreen = () => {
 
 
   const handleSubmit = async () => {
+    setLoader(true)
     console.log(newPost)
     let jwt = await AsyncStorage.getItem('token')
     postService.addPost(newPost, jwt)
     .then(()=> {
+      setLoader(false)
       navigation.navigate('PostsScreen')
     })
     .catch((err)=> {
-        Alert.alert('Error', 'Failed to add post')
+      setLoader(false)
+      Alert.alert('Error', 'Failed to add post')
     })
   };
 
@@ -86,6 +93,11 @@ const AddPostScreen = () => {
         <ImagePreview source={{ uri: newPost.image }} />
       )}
       <SubmitButton title="Submit" onPress={handleSubmit} />
+       {loader &&  
+        <ViewLoader>
+          <Loader/>
+        </ViewLoader>
+       }
     </Container>
   );
 };

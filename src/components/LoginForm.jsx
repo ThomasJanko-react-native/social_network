@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { Context } from '../config/context';
+import Loader from './Loader';
 
 
 const Container = styled.View`
@@ -36,9 +37,10 @@ const ButtonText = styled.Text`
   textAlign: center;
 `;
 
+
 const LoginForm = () => {
   const navigation = useNavigation();
-  const {login} = useContext(Context)
+  const {login, loader, setLoader} = useContext(Context)
 
     const [user, setUser] = useState({
         email: '',
@@ -50,6 +52,7 @@ const LoginForm = () => {
     };
 
     const handleSubmit = () => {
+      setLoader(true)
         console.log(user)
         userService.login(user)
         .then((res)=> {
@@ -57,9 +60,11 @@ const LoginForm = () => {
             // console.log(token)
             AsyncStorage.setItem('token',token);
             login(token)
+            setLoader(false)
             navigation.navigate('PostsScreen')
         })
         .catch(() => {
+          setLoader(false)
           Alert.alert('Error', 'There was a problem with the login. Please try again later.');
         })
     }

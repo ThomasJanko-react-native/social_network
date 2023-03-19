@@ -39,35 +39,34 @@ const ButtonText = styled.Text`
 
 const RegisterForm = () => {
     const navigation = useNavigation();
-    const {login} = useContext(Context)
+    const {login, loader, setLoader} = useContext(Context)
 
     const [user, setUser] = useState({
         email: '',
         firstName: '',
         lastName: '',
         password: '',
-        avatar: '',
+        avatar: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70)
     })
 
     const handleInputChange = (key, value) => {
-      if (key === 'avatar') {
-        value = 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70);
-      }
         setUser({ ...user, [key]: value });
     };
 
     const handleSubmit = () => {
+      setLoader(true)
         console.log(user)
-        handleInputChange('avatar', 'avatar')
         userService.register(user)
         .then((res) => {
           let token = res.data
           AsyncStorage.setItem('token',token);
           login(token)
+          setLoader(false)
           navigation.navigate('PostsScreen')
         })
         .catch(() => {
           Alert.alert('Error', 'There was a problem with the register. Please try again later.');
+          setLoader(false)
         })
     }
 
