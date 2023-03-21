@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "241065696027",
+    "project_id": "social-network-solo",
+    "storage_bucket": "social-network-solo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241065696027:android:441c0facedc6ac292c51be",
+        "android_client_info": {
+          "package_name": "com.social_network"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241065696027-qpcmgdvmk4db63lmfn5qu6laa2s7c94s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgZPNoC-lTnTCU0HvXAnf_MqJJ8zOI5UI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241065696027-qpcmgdvmk4db63lmfn5qu6laa2s7c94s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

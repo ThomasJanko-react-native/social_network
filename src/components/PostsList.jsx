@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View, SafeAreaView, Alert } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View, SafeAreaView, Alert, Button } from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TextInput } from 'react-native';
@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../config/context';
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import notifee from '@notifee/react-native';
+import messaging from '@react-native-firebase/messaging';
 
 const PostsList = () => {
 
@@ -16,6 +18,70 @@ const PostsList = () => {
   const [error, setError] = useState();
 
   const [posts, setPosts] = useState([])
+
+
+  const initNotification = async () => {
+    try {
+      // Register the device with FCM
+      await messaging().registerDeviceForRemoteMessages();
+
+      // Get the token
+      const token = await messaging().getToken();
+
+      // Save the token
+      await AsyncStorage.setItem('fcm_token', JSON.stringify(token));
+
+
+      // required for iOS
+      await notifee.requestPermission();
+
+      // required for Android
+      await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+      });
+    } catch (err) {
+      toast.show(err.message, {type: 'warning'});
+    }
+  };
+
+  useEffect(() => {
+    initNotification();
+  }, [])
+  
+  messaging().onMessage(remoteMessage =>
+    onDisplayNotification(
+      remoteMessage.notification.title,
+      remoteMessage.notification.body,
+    ),
+  );
+  messaging().setBackgroundMessageHandler(remoteMessage =>
+    onDisplayNotification(
+      remoteMessage.notification.title,
+      remoteMessage.notification.body,
+    ),
+  );
+
+  const onDisplayNotification = async (title, body) => {
+    try {
+      // Display a notification
+      await notifee.displayNotification({
+        title: title,
+        body: body,
+        android: {
+          channelId: 'default',
+          // pressAction is needed if you want the notification to open the app when pressed
+          pressAction: {
+            id: 'default',
+          },
+        },
+      });
+    } catch (err) {
+      toast.show(err.message, {type: 'warning'});
+    }
+  };
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -26,7 +92,7 @@ const PostsList = () => {
   const fetchPosts = async () => {
     try{
       response = await postService.getPosts()
-      console.log(response)
+      // console.log(response)
       setPosts(response.data)
     }
     catch(err){
@@ -57,6 +123,15 @@ const PostsList = () => {
       keyExtractor={(item) => item._id.toString()}
       renderItem={({ item }) => <Post post={item} />}
     />
+     <Button
+     title='Message'
+          onPress={() =>
+            onDisplayNotification(
+              'Notification Title',
+              'Main body content of the notification',
+            )
+          }
+        />
     <FlashMessage autoHide={true} duration={6000} position="bottom"  />
     </Container>
   );
@@ -135,6 +210,7 @@ const Post = ({ post }) => {
 
             </AddComment>
         )}
+
 
     </PostContainer>
   );
