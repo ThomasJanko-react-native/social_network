@@ -7,6 +7,7 @@ import postService from '../services/post.service';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Context } from '../config/context';
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 const PostsList = () => {
 
@@ -30,7 +31,11 @@ const PostsList = () => {
     }
     catch(err){
       setError(error);
-      Alert.alert('Error', 'Something went wrong')
+      showMessage({
+        message: 'Error !',
+        description: error.message,
+        type: 'danger',
+      });
     }
     finally{
       setLoading(false);
@@ -42,7 +47,7 @@ const PostsList = () => {
     // return <Loader/>
   }
   if (error) {
-    return <Text>Error: {error.message}</Text>;
+    return  <FlashMessage autoHide={true} duration={6000} position="top" />;
   }
   
   return (
@@ -52,6 +57,7 @@ const PostsList = () => {
       keyExtractor={(item) => item._id.toString()}
       renderItem={({ item }) => <Post post={item} />}
     />
+    <FlashMessage autoHide={true} duration={6000} position="bottom"  />
     </Container>
   );
 };
@@ -73,6 +79,11 @@ const Post = ({ post }) => {
     }
     postService.addComment(postId, jwt, form)
     .then((res) => {
+      showMessage({
+        message: 'Success !',
+        description: 'message added successfully !',
+        type: 'success',
+      });
       setComment('')
       setDialogComment(!dialogComment)
       setReload(!reload)
@@ -85,6 +96,7 @@ const Post = ({ post }) => {
 
   return (
     <PostContainer>
+        
       <PostHeader>
         <ProfileImage source={{ uri: post.author.avatar }} />
         <Text>{post.author.firstName}</Text>
@@ -120,10 +132,10 @@ const Post = ({ post }) => {
             <AddComment>
                 <TextInput placeholder='add comment...' value={comment} onChangeText={(e) => setComment(e)} />
                 <Icon name="send-o" size={20} color="#888" onPress={() => handleComment(post._id)} />
+
             </AddComment>
         )}
 
-        
     </PostContainer>
   );
 };
@@ -206,6 +218,8 @@ const Comment = styled.View`
 
 const CommentText = styled.Text`
   margin-left: 0px;
+  font-size: 14px;
+  font-style: italic;
 `;
 const Username = styled.Text`
   font-weight: bold;

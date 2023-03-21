@@ -7,7 +7,7 @@ import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Loader from '../components/Loader';
-
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 const Container = styled.View`
   flex: 1;
@@ -66,7 +66,12 @@ const AddPostScreen = () => {
     })
     .catch((err)=> {
       setLoader(false)
-      Alert.alert('Error', 'Failed to add post')
+      showMessage({
+        message: 'Error !',
+        description: err.message,
+        type: 'danger',
+      });
+      // Alert.alert('Error', 'Failed to add post')
     })
   };
 
