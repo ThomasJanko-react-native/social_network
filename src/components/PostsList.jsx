@@ -13,75 +13,17 @@ import messaging from '@react-native-firebase/messaging';
 
 const PostsList = () => {
 
-  const {reload} = useContext(Context)
+  const {reload, initNotification} = useContext(Context)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
 
   const [posts, setPosts] = useState([])
 
 
-  const initNotification = async () => {
-    try {
-      // Register the device with FCM
-      await messaging().registerDeviceForRemoteMessages();
-
-      // Get the token
-      const token = await messaging().getToken();
-
-      // Save the token
-      await AsyncStorage.setItem('fcm_token', JSON.stringify(token));
-
-
-      // required for iOS
-      await notifee.requestPermission();
-
-      // required for Android
-      await notifee.createChannel({
-        id: 'default',
-        name: 'Default Channel',
-      });
-    } catch (err) {
-      toast.show(err.message, {type: 'warning'});
-    }
-  };
-
   useEffect(() => {
     initNotification();
   }, [])
   
-  messaging().onMessage(remoteMessage =>
-    onDisplayNotification(
-      remoteMessage.notification.title,
-      remoteMessage.notification.body,
-    ),
-  );
-  messaging().setBackgroundMessageHandler(remoteMessage =>
-    onDisplayNotification(
-      remoteMessage.notification.title,
-      remoteMessage.notification.body,
-    ),
-  );
-
-  const onDisplayNotification = async (title, body) => {
-    try {
-      // Display a notification
-      await notifee.displayNotification({
-        title: title,
-        body: body,
-        android: {
-          channelId: 'default',
-          // pressAction is needed if you want the notification to open the app when pressed
-          pressAction: {
-            id: 'default',
-          },
-        },
-      });
-    } catch (err) {
-      toast.show(err.message, {type: 'warning'});
-    }
-  };
-
-
 
   useFocusEffect(
     useCallback(() => {
@@ -123,7 +65,8 @@ const PostsList = () => {
       keyExtractor={(item) => item._id.toString()}
       renderItem={({ item }) => <Post post={item} />}
     />
-     <Button
+    {/* Notification push */}
+     {/* <Button
      title='Message'
           onPress={() =>
             onDisplayNotification(
@@ -131,7 +74,7 @@ const PostsList = () => {
               'Main body content of the notification',
             )
           }
-        />
+        /> */}
     <FlashMessage autoHide={true} duration={6000} position="bottom"  />
     </Container>
   );
@@ -139,7 +82,7 @@ const PostsList = () => {
 
 const Post = ({ post }) => {
 
-    const {reload, setReload} = useContext(Context)
+    const {reload, setReload, initNotification, onDisplayNotification, userAuth} = useContext(Context)
 
     const [comment, setComment] = useState("");
     // const [comments, setComments] = useState(post.comments.slice(0, 4));
@@ -147,6 +90,10 @@ const Post = ({ post }) => {
     const [dialogComment, setDialogComment] = useState(false);
     const [like, setLike] = useState(false)
     
+    useEffect(() => {
+      initNotification();
+    }, [])
+
     const handleComment = async (postId) => {
     let jwt = await AsyncStorage.getItem('token')
     let form = {
@@ -162,6 +109,10 @@ const Post = ({ post }) => {
       setComment('')
       setDialogComment(!dialogComment)
       setReload(!reload)
+      onDisplayNotification(
+        'New comment !',
+        `${userAuth.firstName} commented on your post`,
+      )
       })
     .catch((err) => {
       console.log(err)
