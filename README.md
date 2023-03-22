@@ -1,13 +1,15 @@
 # Author : [Thomas-Jankowski]
 
 Fonctionnalités:
-> register / login + utilisateur persistent
-> Routeur + sécurisation routes
-> Retour utilisateurs (loader / messages)
-> ThemeProvider
-> notification push (firebase + notifee) -> ajout d'un commentaire
-> ajout d'un post (+ sur la bottomBar)
-> ajout commentaire (click sur icon message)
+> 
+- register / login + utilisateur persistent
+- Routeur + sécurisation routes
+- Retour utilisateurs (loader / messages)
+- ThemeProvider
+- notification push (firebase + notifee) -> ajout d'un commentaire
+- ajout d'un post (+ sur la bottomBar)
+- ajout commentaire (click sur icon message)
+>
 
 Infos complémentaires:
 
