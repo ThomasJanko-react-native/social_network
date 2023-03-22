@@ -1,4 +1,4 @@
-# Author : [Thomas-Jankowski]
+# Author : Thomas Jankowski
 
 Fonctionnalités:
 > 
