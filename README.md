@@ -13,5 +13,6 @@ Fonctionnalités:
 
 Infos complémentaires:
 
-Dans les services, mettre l'addresse de son wifi pour que le pc et le téléphone soient connectés au même réseau.
+- Démo = project.mp4 
+- Dans les services, mettre l'addresse de son wifi pour que le pc et le téléphone soient connectés au même réseau.
 API sur : [https://github.com/ThomasJanko-react-native/social_api](https://github.com/ThomasJanko-react-native/social_api)
